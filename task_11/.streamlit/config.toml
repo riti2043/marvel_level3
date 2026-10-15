@@ -1,0 +1,14 @@
+[theme]
+base = "dark"
+primaryColor = "#71717A"               # Neutral zinc/silver grey for active buttons & focus rings
+backgroundColor = "#000000"            # True complete pitch black for main chat area
+secondaryBackgroundColor = "#121212"   # Minimal dark charcoal grey for sidebar & cards
+textColor = "#E4E4E7"                  # Clean light grey for high-readability text
+font = "sans serif"
+
+
+[server]
+headless = true
+enableCORS = false
+enableXsrfProtection = true
+maxUploadSize = 50

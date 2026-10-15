@@ -1,0 +1,16 @@
+# Python environment & cache
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+
+# Streamlit secrets (Do NOT commit sensitive API keys to Git)
+.streamlit/secrets.toml
+
+# Operating System & IDE files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

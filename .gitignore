@@ -1,0 +1,15 @@
+# Large dataset files
+*.csv
+*.ubyte
+*.pdf
+
+# Python & Environment
+__pycache__/
+*.py[cod]
+*$py.class
+.ipynb_checkpoints/
+.agents/
+.vscode/
+
+# Streamlit secrets
+.streamlit/secrets.toml

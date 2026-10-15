@@ -1,0 +1,92 @@
+/* 1. Import Geist Font */
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&display=swap');
+
+/* Apply typography cleanly without overriding icon font ligatures */
+html, body, p, h1, h2, h3, h4, h5, h6, .stMarkdown, .stTextInput, textarea {
+    font-family: 'Geist', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !important;
+    letter-spacing: -0.01em;
+}
+
+/* Ensure Streamlit icons render properly */
+[data-testid="stIconMaterial"], .material-symbols-rounded, .material-symbols-outlined, [data-testid="stIcon"] {
+    font-family: "Material Symbols Rounded", sans-serif !important;
+}
+
+/* 2. Sleek Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #000000;
+}
+::-webkit-scrollbar-thumb {
+    background: #27272A;
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #3F3F46;
+}
+
+/* 3. Minimalist Chat Message Container */
+[data-testid="stChatMessage"] {
+    background-color: #0c0c0e;
+    border: 1px solid #1c1c20;
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    margin-bottom: 0.75rem;
+}
+
+/* 4. Sleek File Uploader Dropzone */
+[data-testid="stFileUploaderDropzone"] {
+    background-color: #0c0c0e !important;
+    border: 1px dashed #27272A !important;
+    border-radius: 12px !important;
+    padding: 1.75rem 1.5rem !important;
+    text-align: center;
+}
+[data-testid="stFileUploaderDropzone"]:hover {
+    border-color: #52525B !important;
+    background-color: #121215 !important;
+}
+[data-testid="stFileUploaderDropzone"] button {
+    border: 1px solid #3F3F46 !important;
+    background-color: #18181B !important;
+    color: #F4F4F5 !important;
+    border-radius: 8px !important;
+    padding: 0.4rem 1.25rem !important;
+    font-size: 0.9rem !important;
+}
+
+/* 5. Sidebar Thread Item Buttons & New Chat */
+[data-testid="stSidebar"] button[kind="secondary"] {
+    border: 1px solid #27272A;
+    background-color: #121212;
+    color: #A1A1AA;
+    text-align: left;
+    border-radius: 8px;
+    transition: all 0.15s ease-in-out;
+}
+[data-testid="stSidebar"] button[kind="secondary"]:hover {
+    background-color: #1F1F23;
+    color: #FFFFFF;
+    border-color: #3F3F46;
+}
+
+/* Primary Action Button (New Chat) */
+[data-testid="stSidebar"] button[kind="primary"] {
+    background-color: #27272A !important;
+    border: 1px solid #3F3F46 !important;
+    color: #FFFFFF !important;
+    font-weight: 500;
+}
+[data-testid="stSidebar"] button[kind="primary"]:hover {
+    background-color: #3F3F46 !important;
+}
+
+/* 6. Minimalist Citations Expander */
+[data-testid="stExpander"] {
+    border: 1px solid #27272A !important;
+    background-color: #09090B !important;
+    border-radius: 8px !important;
+}
