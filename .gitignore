@@ -1,7 +1,11 @@
 # Large dataset files
 *.csv
 *.ubyte
+*.idx*-ubyte*
+*-idx*-ubyte*
+*-ubyte*
 *.pdf
+**/data/
 
 # Python & Environment
 __pycache__/
