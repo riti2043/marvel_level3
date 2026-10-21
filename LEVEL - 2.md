@@ -1,4 +1,3 @@
-
 ## TASK 1 : Naive Bayes Classifier
 
 Naive Bayes is a **probabilistic classifier** that uses Bayes' theorem to predict the class with the highest **posterior probability**. It assumes the features are **conditionally independent** given the class, which is rarely true for real text but makes the model very fast. The **Multinomial** variant works on word counts, and **Laplace smoothing** stops an unseen word from zeroing out a class.
@@ -33,10 +32,12 @@ The **IMDB Movie Reviews dataset** contains **50,000 reviews** labeled **positiv
 
 ## TASK 2 : Ensemble Learning and Tree-Based Models
 
-Ensemble learning combines several models so that the group predicts better than any single model. **Bagging** (used by **Random Forest**) trains many deep trees independently on bootstrap samples with random feature subsets and averages their votes, which mainly reduces **variance**. **Boosting** (used by **Gradient Boosting** and **XGBoost**) builds shallow trees one after another, each correcting the errors of the previous ones and scaled by a **learning rate**, which mainly reduces **bias**. XGBoost extends gradient boosting with built-in **L1/L2 regularization**, native handling of missing values and speed optimizations.
+Ensemble learning combines several models so that the group predicts better than any single model. This task compares **Random Forest** (bagging), **Gradient Boosting** and **XGBoost** (boosting) on the Titanic survival dataset.
+
+[What I learnt about Ensemble Learning](https://github.com/riti2043/Concepts_for_level2/blob/master/ensemble_learning.md)
 
 ### Dataset Used :
-The **Titanic survival dataset** contains **891 passengers** with details such as class, sex, age, family members aboard, fare, cabin and port of embarkation. The target is whether the passenger **survived**. About 38% survived, so the classes are mildly imbalanced and precision, recall and F1-score were reported alongside accuracy, with **F1-score** used to rank the models.
+The Titanic survival dataset contains 891 passengers with details such as class, sex, age, fare and family members aboard. The target is whether the passenger survived or did not survive.
 
 ### Process followed:
 - Loaded the dataset and checked its shape, data types, missing values (mainly *Age*, *Cabin* and *Embarked*) and survival rate. Explored survival by sex and passenger class.
@@ -62,7 +63,7 @@ The **Titanic survival dataset** contains **891 passengers** with details such a
 
 Hyperparameter tuning finds the best external configuration for a model by searching the parameter space using cross-validation, without ever touching the test set. Three search strategies were compared — **Grid Search**, **Randomized Search**, and **Bayesian Optimization (Optuna)** — across three model families to understand their trade-offs in coverage, speed, and sample efficiency.
 
-[What I learnt about Hyperparameter Tuning](ADD_ARTICLE_LINK_HERE)
+[What I learnt about Hyperparameter Tuning](https://github.com/riti2043/Concepts_for_level2/blob/master/ensemble_learning.md)
 
 ### Dataset Used :
 The **Titanic survival dataset** (891 passengers) with a ~38% survival rate. **F1-score** was the primary optimization metric due to mild class imbalance.
@@ -174,23 +175,58 @@ Deep neural networks learn by repeatedly cycling through four steps: forward pas
 
 ## TASK 11 : PDF Question Answering using RAG
 
-Retrieval-Augmented Generation (RAG) solves a core limitation of LLMs — they cannot answer questions about documents they were never trained on, and they hallucinate when they try. RAG fixes this by **retrieving relevant passages from your document first**, then handing them to the LLM as grounded context, so the answer comes from the document rather than the model's memory.
+Large Language Models (LLMs) are trained on fixed datasets - they have no knowledge of documents
+outside their training data. When asked about such documents, they either **fail to answer** or 
+**hallucinate**, generating confident but factually incorrect responses.
 
-[What I learnt about RAG](ADD_ARTICLE_LINK_HERE) | [Live App](ADD_STREAMLIT_LINK_HERE)
+**Retrieval-Augmented Generation (RAG)** addresses this by combining information retrieval with 
+language generation. Instead of relying on the model's memory, RAG first retrieves the most 
+relevant passages from an external knowledge source, then passes them to the LLM as grounded 
+context. The model generates its answer strictly from what was retrieved, making responses 
+**accurate, traceable and document-specific.**
+
+![](https://github.com/riti2043/Level1images/blob/main/How-rag-pipeline-works-1024x614.webp?raw=true)
+
+RAG systems generally fall into three types:
+
+- **Naive RAG:** The simplest form — chunk the document, embed the chunks, retrieve the top-K 
+  most similar ones at query time, and pass them directly to the LLM. Fast to build but limited 
+  by retrieval quality.
+
+- **Advanced RAG:** Adds pre-retrieval steps (query rewriting, hypothetical document embeddings) 
+  and post-retrieval steps (re-ranking, context compression) to improve the relevance of what 
+  gets passed to the model.
+
+- **Modular RAG:** A flexible pipeline where each component (retriever, reranker, generator) can 
+  be swapped or extended independently. Suited for production systems with complex requirements.
+
+This project implements a **Naive RAG pipeline** with conversational memory, applied to 
+PDF question answering.
 
 ### What I built :
-- **RAG pipeline** — PDF is parsed page by page, split into overlapping chunks, embedded using Gemini `text-embedding-004`, and stored in a FAISS in-memory vector index. At query time, the question is embedded and the top-K most similar chunks are retrieved via cosine similarity.
-- **Grounded generation** — Retrieved chunks are injected into a system prompt that instructs Gemini 1.5 Flash to answer strictly from the provided context, explicitly stating when the document does not contain the answer.
-- **Conversational memory** — The last 4 chat turns are included in the prompt, allowing follow-up questions without losing context.
-- **Persistent chat history** — Conversation threads and messages are stored in **Supabase** (PostgreSQL), with a local session-state fallback when the database is unavailable.
-- **Streamlit UI** — Multi-thread sidebar for switching between conversations, token-by-token streamed responses, and page-number citations shown alongside each answer.
+
+- **PDF Parsing:** Documents are loaded and parsed page by page using pypdf.
+- **Chunking:** Text is split into overlapping chunks using LangChain's `RecursiveCharacterTextSplitter` (1000 chars, 150 overlap).
+- **Embeddings:** Each chunk is converted into a dense vector using Google's `text-embedding-004` model.
+- **Vector Store:** Chunk embeddings are indexed in a FAISS in-memory store for fast similarity search.
+- **Query Retrieval:** At query time, the user's question is embedded and the top 4 most similar chunks are retrieved via cosine similarity.
+- **Grounded Generation:** Retrieved chunks are injected into a system prompt that constrains Gemini 1.5 Flash to answer only from the provided context.
+- **Conversational Memory:** The last 4 chat turns are appended to every prompt, enabling coherent follow-up questions.
+- **Persistent History:** Conversation threads and messages are stored in Supabase (PostgreSQL), with a local session-state fallback.
+- **Streamlit Interface:** A multi-thread sidebar for switching between past conversations, with token-by-token streamed responses and page-number citations.
 
 ### Tech Stack :
-- **LangChain** — document loading, chunking, embeddings and vector store interface
-- **FAISS** — in-memory vector similarity search
-- **Google Gemini** — `text-embedding-004` for embeddings, `gemini-1.5-flash` for generation
-- **Supabase** — persistent thread and message storage
-- **Streamlit** — frontend and deployment
+
+| Tool | Role |
+|:---|:---|
+| **pypdf** | PDF parsing and page extraction |
+| **LangChain** | Text chunking, embeddings interface and vector store wrapper |
+| **FAISS** | In-memory vector indexing and similarity retrieval |
+| **Google Gemini** | `text-embedding-004` for embeddings, `gemini-1.5-flash` for generation |
+| **Supabase** | Persistent storage for conversation threads and messages |
+| **Streamlit** | Frontend UI, sidebar navigation and response streaming |
+
+![](https://github.com/riti2043/Level1images/blob/main/rag_architecture.png?raw=true)
 
 ### Implementation:
 - Understood how semantic search differs from keyword search — embeddings capture meaning, not exact words, so a question phrased differently still retrieves the right passage.
@@ -199,6 +235,6 @@ Retrieval-Augmented Generation (RAG) solves a core limitation of LLMs — they c
 - Understood why responses are streamed token by token — it gives immediate feedback rather than a long wait, which is critical for UX with longer documents.
 - Designed the database layer with a local fallback so the app works even without a Supabase connection.
 
-[GitHub Repo](ADD_LINK_HERE) | [Live App](ADD_STREAMLIT_LINK_HERE)
+[GitHub Repo](https://github.com/riti2043/marvel_level3/tree/main/task_11) | [Live App](https://ragsimplechatbot.streamlit.app/)
 
 ![](ADD_IMAGE_LINK_HERE)
