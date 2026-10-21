@@ -2,7 +2,8 @@ import io
 import pypdf
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
+from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from langchain_community.vectorstores import FAISS
 
 
@@ -34,7 +35,7 @@ def build_vectorstore(chunks, gemini_api_key: str):
     """
     Generates embeddings via Google Gemini and stores
     them in an in-memory FAISS index.
-    Attempts active models (gemini-embedding-001) with graceful fallbacks.
+    Attempts active model (gemini-embedding-001) with graceful fallbacks.
     """
     candidate_models = [
         "models/gemini-embedding-001",
@@ -54,9 +55,6 @@ def build_vectorstore(chunks, gemini_api_key: str):
             last_err = e
             continue
     raise last_err
-
-from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 
 
 def retrieve_relevant_docs(vectorstore, question: str, k: int = 4):
@@ -109,7 +107,39 @@ def stream_rag_answer(docs, question: str, chat_history: list, gemini_api_key: s
         streaming=True
     )
 
-    # Yield tokens one by one as they arrive from Gemini
+    for chunk in llm.stream(messages):
+        if chunk.content:
+            yield chunk.content
+
+
+def stream_general_answer(question: str, chat_history: list, gemini_api_key: str):
+    """
+    Streams a direct conversational answer from Gemini when no document has been uploaded yet.
+    """
+    system_prompt = (
+        "You are a helpful and precise AI assistant. "
+        "Answer the user's questions clearly and accurately. "
+        "If relevant, you can let the user know they can also upload a PDF document at any time "
+        "to ask grounded questions with source citations."
+    )
+
+    messages = [SystemMessage(content=system_prompt)]
+
+    for msg in chat_history[-4:]:
+        if msg.get("role") == "user":
+            messages.append(HumanMessage(content=msg.get("content", "")))
+        elif msg.get("role") == "assistant":
+            messages.append(AIMessage(content=msg.get("content", "")))
+
+    messages.append(HumanMessage(content=question))
+
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-1.5-flash",
+        google_api_key=gemini_api_key,
+        temperature=0.3,
+        streaming=True
+    )
+
     for chunk in llm.stream(messages):
         if chunk.content:
             yield chunk.content
