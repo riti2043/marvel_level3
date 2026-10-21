@@ -96,51 +96,51 @@ The **Titanic survival dataset** (891 passengers) with a ~38% survival rate. **F
 ![](ADD_MATH_IMAGE_LINK_HERE)
 
 ### Dataset Used :
-The **MNIST handwritten digits dataset**, with **70,000 images** (the standard 60,000 training and 10,000 test images combined) of the digits 0 to 9. Each image is 28 × 28 pixels, flattened into **784 features**. Clustering needs no train/test split, so the **true labels were used only for evaluation**, never for fitting.
+The MNIST handwritten digits dataset has 70,000 images (60,000 training and 10,000 test images combined) of the digits 0 to 9, each 28 × 28 pixels, flattened into 784 features. The true labels were used only for evaluation, never for fitting.
 
 ### Process followed:
-- Loaded the four raw MNIST (IDX) files, combined the training and test images into **70,000 images**, and checked the shapes, pixel range and missing values.
-- Explored the data through the class distribution, sample images of each digit, and the **mean image per digit** (what a perfect centroid would look like).
-- Scaled the pixel values from 0-255 to **0-1**, and studied the concepts behind image clustering: flattening, the curse of dimensionality, PCA, t-SNE, and the methods for choosing K.
-- Implemented **K-Means++ from scratch** with NumPy, computing squared distances through one matrix multiplication so that the full 70,000 × 784 data runs quickly.
-- Trained scikit-learn's `KMeans` with the same settings (**K = 10, K-Means++, `n_init=3`**) and compared the two on inertia, iterations, fit time, and the ARI between their clusterings.
-- Evaluated the clusters against the true digits using **majority-vote accuracy (purity)**, **Hungarian accuracy** (best one-to-one matching), **ARI** and **NMI**, with a contingency heatmap, a confusion matrix, per-digit recall and the most frequent confusions.
-- Visualized the clusters with **centroid images**, a cluster summary table, random images from every cluster, and **PCA and t-SNE 2-D plots** colored by cluster and by true digit.
-- Concluded that the from-scratch model matched scikit-learn (inertia within **0.017%**). The clusters reached **54 to 58% accuracy**, far above random guessing (10%) but well below supervised classifiers. Digits 0, 2 and 6 formed clean clusters, while digit 1 split in two and digit 5 got none, because pixel-by-pixel distance treats shifted or thickened copies of a digit as far apart.
+- Loaded the raw MNIST (IDX) files, combined them into **70,000 images**, and checked shapes, pixel range and missing values.
+- Explored the class distribution, sample digits and the **mean image per digit** (what a perfect centroid would look like).
+- Scaled pixels from 0-255 to **0-1**, and studied flattening, the curse of dimensionality, PCA, t-SNE and the methods for choosing K.
+- Implemented **K-Means++ from scratch** in NumPy, using one matrix multiplication for distances so the full data runs quickly.
+- Trained scikit-learn's `KMeans` with the same settings (**K = 10, K-Means++, `n_init=3`**) and compared the two on inertia, iterations, fit time and ARI.
+- Evaluated the clusters against the true digits using **purity**, **Hungarian accuracy**, **ARI** and **NMI**, with a contingency heatmap, confusion matrix and per-digit recall.
+- Visualized the clusters with **centroid images**, sample images per cluster, and **PCA and t-SNE 2-D plots**.
+- Concluded that the from-scratch model matched scikit-learn (inertia within **0.017%**). The clusters reached **54 to 58% accuracy**, far above random guessing (10%) but below supervised classifiers. Digits 0, 2 and 6 formed clean clusters, while digit 1 split in two and digit 5 got none, because pixel-by-pixel distance treats shifted or thickened copies of a digit as far apart.
 
 ### Implementation:
 - Understood clustering, centroids, Euclidean distance, inertia, K-Means++ and why K-Means only reaches a local minimum.
 - Implemented K-Means++ **from scratch** in NumPy, along with scikit-learn's `KMeans` on MNIST, and compared the two.
 - Evaluated the clusters against the true labels and visualized them with centroids, PCA and t-SNE.
 
-[Link to notebook](ADD_LINK_HERE)
+[Link to notebook](https://github.com/riti2043/marvel_level3/blob/main/task_4/kmeans.ipynb)
 
-![](ADD_RESULTS_IMAGE_LINK_HERE)
+![](https://github.com/riti2043/Level1images/blob/main/5task1.jpeg?raw=true)
 
 ## TASK 5 : Introduction to PyTorch
 
 PyTorch is an open-source deep learning framework developed by Meta AI. It is built around three core components: **Tensors** (multi-dimensional arrays that run on GPU), **Autograd** (an automatic differentiation engine that computes gradients via backpropagation), and **torch.nn / torch.optim** (pre-built layers, loss functions and optimizers). Its dynamic computation graphs make it easy to write and debug models.
 
 ### What I covered:
-- **Tensors** — creating, indexing, slicing, reshaping and operating on multi-dimensional arrays. Understood shape, dtype, device and the difference between element-wise and matrix operations.
-- **Broadcasting and NumPy interoperability** — how PyTorch stretches smaller tensors to match shapes, and how CPU tensors share memory with NumPy arrays.
-- **GPU acceleration** — moved tensors with `.to(device)` and benchmarked matrix multiplication across matrix sizes, observing significant speed-ups on a Tesla T4 GPU.
-- **Autograd** — understood how PyTorch builds a computational graph and calls `.backward()` to apply the chain rule. Verified autograd derivatives against hand-computed values.
-- **Linear Regression in PyTorch** — trained a model on synthetic data using `nn.Linear`, `MSELoss` and SGD. The learned weight and bias closely matched the true values, confirming correct training.
+- **Tensors:** created tensors from Python data, with constant values, random values and sequences. Checked their shape, dtype and device, then indexed, sliced and masked them. Applied element-wise, matrix (`@`, `matmul`, `einsum`) and reduction operations, and reshaped, joined and split tensors.
+- **Broadcasting and NumPy interoperability:** added a vector to a matrix and combined a column with a row, and saw incompatible shapes raise an error. Showed that a tensor and a NumPy array share memory on the CPU, so changing one changes the other, and that `torch.tensor(array)` makes an independent copy.
+- **GPU acceleration:** moved tensors with `.to(device)`, showed that mixing CPU and GPU tensors raises an error, and timed matrix multiplication from 500 × 500 to 4000 × 4000 on a Tesla T4. The GPU was **14.6x to 27.5x faster**, and the gap grew with matrix size (1093 ms on the CPU vs 39.8 ms on the GPU at 4000 × 4000).
+- **Autograd:** saw how PyTorch records operations in a computational graph and applies the chain rule on `.backward()`. Checked that the derivative of y = x² + 3x at x = 2 came out as 7, matching 2x + 3, and that gradients **accumulate** across calls (7, 14, 21) until they are zeroed. Also verified the gradients of a regression loss against the hand-derived formulas.
+- **Linear regression:** trained `nn.Linear` with `MSELoss` and SGD on synthetic data generated from y = 3x + 2 plus noise (160 training and 40 test points). The model learned a weight of **2.99** and a bias of **2.20**, with a test MSE of **0.653** and an R² of **0.991**.
 
 ### Implementation:
-- Understood tensors as the core data structure and practiced all key operations from creation to reduction.
-- Implemented gradient descent manually before switching to `torch.optim`, to understand what the optimizer does under the hood.
-- Verified autograd gradients against hand-computed derivatives to confirm the engine is working correctly.
-- Understood why gradients must be zeroed before each backward pass with `optimizer.zero_grad()`.
-- Understood GPU asynchrony and why `torch.cuda.synchronize()` is needed for accurate timing.
+- Wrote a gradient descent loop by hand using only autograd (`w ← w − lr × grad`), which recovered w = 2.0001 and b = 0.9998 for y = 2x + 1. Part B then used `torch.optim` to do the same job.
+- Built the five-step training loop (forward pass, loss, `zero_grad`, `backward`, `step`) and tracked train and test loss per epoch.
+- Evaluated the model with test MSE, R² and a fitted-line plot, and compared the learned parameters with the true ones.
+- Timed GPU code correctly: used a warm-up run and `torch.cuda.synchronize()`, since GPU operations run asynchronously and a plain timer would stop too early.
+- 
+[Link to notebook](https://github.com/riti2043/marvel_level3/blob/main/task5/pytorch.ipynb)
 
-[Link to notebook](ADD_LINK_HERE)
-
-![](ADD_IMAGE_LINK_HERE)
+![](https://github.com/riti2043/Level1images/blob/main/5task2.jpeg?raw=true)
+![](https://github.com/riti2043/Level1images/blob/main/4task.jpeg?raw=true)
 ## TASK 6 : Deep Learning Fundamentals
 
-Deep neural networks learn by repeatedly cycling through four steps: forward pass, loss computation, backpropagation and weight update. Four design choices govern how well this cycle works — **activation functions**, **loss functions**, **optimizers**, and **regularization** — and each was isolated in a controlled experiment on Fashion-MNIST.
+Deep neural networks learn by repeatedly cycling through four steps: forward pass, loss computation, backpropagation and weight update. Four design choices govern how well this cycle works - **activation functions**, **loss functions**, **optimizers**, and **regularization** - and each was isolated in a controlled experiment on Fashion-MNIST.
 
 [What I learnt about Deep Learning Fundamentals](ADD_ARTICLE_LINK_HERE)
 
@@ -164,12 +164,10 @@ Deep neural networks learn by repeatedly cycling through four steps: forward pas
 - Built Dropout and Batch Normalization into the same model class and understood why both behave differently in `model.train()` vs `model.eval()` mode.
 - Designed experiments so only one variable changes per run, making the cause of each difference unambiguous.
 
-[Link to notebook](ADD_LINK_HERE)
+[Link to notebook](https://github.com/riti2043/marvel_level3/blob/main/task6/deep_learning.ipynb)
 
-![](ADD_IMAGE_LINK_HERE)
+![](https://github.com/riti2043/Level1images/blob/main/task6.jpeg?raw=true)
 ## TASK 7 : CNN from Scratch and Transfer Learning
-
-[INTRO - to be discussed]
 
 ### Dataset Used :
 The **CIFAR-10 dataset** contains **60,000 colour images** of size **32×32 pixels** in **10 balanced classes** (airplane, automobile, bird, cat, deer, dog, frog, horse, ship and truck). It is split into **50,000 training** and **10,000 test** images. Since the classes are balanced, accuracy is a fair measure, and precision, recall, F1-score and a confusion matrix were also used to see which classes get confused.
@@ -196,9 +194,34 @@ The **CIFAR-10 dataset** contains **60,000 colour images** of size **32×32 pixe
 
 ![](ADD_RESULTS_IMAGE_LINK_HERE)
 
-## TASK 9 : Transformer-Based NLP
+## TASK 8 : Sequence Modeling using RNN and LSTM
 
-[INTRO - to be discussed]
+### Dataset Used :
+The **IMDB Movie Reviews dataset** contains **50,000 reviews** labeled **positive** or **negative**. The classes are balanced, so accuracy is a fair measure, though precision, recall and F1-score were also reported. Reviews are naturally sequential data, since the meaning of a sentence depends on word order and on words that may appear far earlier in the text.
+
+### Process followed:
+- Loaded the dataset and checked its shape, missing values and duplicate reviews. Explored the class distribution and the distribution of review lengths to decide a suitable sequence length.
+- Removed duplicate reviews so the same review could not appear in more than one split.
+- Cleaned the text lightly by lowercasing and removing HTML tags, keeping words such as *not* and *no* because they carry sentiment.
+- Encoded the labels (positive = 1, negative = 0) and split the data into **80% training, 10% validation and 10% test** using **stratified sampling**.
+- Built a **vocabulary** of the **20,000 most frequent words** from the training set only to avoid data leakage, and converted each review into a sequence of integer IDs, with special tokens for padding and unknown words.
+- **Padded or truncated** every review to a fixed length of **256 tokens**, long enough to cover a large share of the reviews while keeping training fast.
+- Built a **vanilla RNN** and an **LSTM** classifier in PyTorch, each consisting of an **embedding layer (128 dimensions)**, a single recurrent layer with **128 hidden units** and a final linear layer that outputs the sentiment.
+- Trained both models with **identical settings**: Adam optimizer, learning rate **0.001**, batch size **64**, **10 epochs**, gradient clipping and random seed **42**, so the only difference was the architecture.
+- Recorded **training and validation loss and accuracy** for every epoch, along with training time, and evaluated both models on the held-out test set using **accuracy, precision, recall and F1-score**.
+- Compared the two models on final performance, speed of learning, stability of the training curves and behavior on **longer reviews**.
+
+### Implementation:
+-   Understood how sequential data is represented, how a **hidden state** carries information across time steps, and why the **vanishing gradient problem** limits a vanilla RNN on **long-term dependencies**.
+-   Understood how the **gating mechanism** of an LSTM (a separate cell state with input, forget and output gates) helps preserve information across long sequences.
+-   Implemented the full text pipeline (tokenization, vocabulary, padding, batching) and both recurrent models in **PyTorch** under identical training conditions.
+-   Compared the RNN and LSTM using metrics, training curves and performance across review lengths, and related the differences to the vanishing gradient problem.
+
+[Link to notebook](ADD_LINK_HERE)
+
+![](ADD_RESULTS_IMAGE_LINK_HERE)
+
+## TASK 9 : Transformer-Based NLP
 
 ### Dataset Used :
 The same **IMDB Movie Reviews dataset** from Task 8 was used, with the **same 80/10/10 train, validation and test splits**, so that DistilBERT and the LSTM are evaluated on exactly the same data. The reviews are **positive** or **negative**, and accuracy, precision, recall and F1-score were reported.
