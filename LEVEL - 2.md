@@ -26,7 +26,7 @@ The **IMDB Movie Reviews dataset** contains **50,000 reviews** labeled **positiv
 -   Implemented Multinomial Naive Bayes **from scratch** in NumPy, along with accuracy, precision, recall, F1-score and the confusion matrix.
 -   Implemented the same model with **scikit-learn** on identical features and smoothing, and compared the two. They gave identical results.
 
-[Link to notebook](ADD_LINK_HERE)
+[Link to notebook](https://github.com/riti2043/marvel_level3/blob/main/task1/naivebayes.ipynb)
 
 ![](ADD_RESULTS_IMAGE_LINK_HERE)
 
@@ -54,9 +54,9 @@ The **Titanic survival dataset** contains **891 passengers** with details such a
 - Trained the three tree-based ensembles in identical pipelines, so differences come from the model and not the preprocessing.
 - Interpreted feature importance with two methods and compared where they agree and disagree.
 
-[Link to notebook](ADD_LINK_HERE)
+[Link to notebook](https://github.com/riti2043/marvel_level3/blob/main/task2/ensemble.ipynb)
 
-![](ADD_RESULTS_IMAGE_LINK_HERE)
+![](https://github.com/riti2043/Level1images/blob/main/task2.jpeg?raw=true)
 
 ## TASK 3 : Hyperparameter Tuning
 
