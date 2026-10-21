@@ -167,11 +167,60 @@ Deep neural networks learn by repeatedly cycling through four steps: forward pas
 [Link to notebook](ADD_LINK_HERE)
 
 ![](ADD_IMAGE_LINK_HERE)
-## Task 7 : CNN from Scratch and Transfer Learning
+## TASK 7 : CNN from Scratch and Transfer Learning
 
-## Task 8 : Sequence Modeling using RNN and LSTM
+[INTRO - to be discussed]
 
-## Task 9 : Transformer-Based NLP
+### Dataset Used :
+The **CIFAR-10 dataset** contains **60,000 colour images** of size **32×32 pixels** in **10 balanced classes** (airplane, automobile, bird, cat, deer, dog, frog, horse, ship and truck). It is split into **50,000 training** and **10,000 test** images. Since the classes are balanced, accuracy is a fair measure, and precision, recall, F1-score and a confusion matrix were also used to see which classes get confused.
+
+### Process followed:
+- Loaded the dataset, checked its shape and class balance, and visualised a grid of sample images from each class.
+- Held out **5,000 of the training images as a validation set**, giving a **45,000 / 5,000 / 10,000** train, validation and test split, with the test set used only for final evaluation.
+- **Part A, CNN from scratch:** Normalised the images using the per-channel mean and standard deviation of the training set and applied **data augmentation** (random crop with 4-pixel padding and random horizontal flip) to the training data only.
+- Built a CNN in PyTorch with **three convolution blocks** (Conv → ReLU → MaxPool, with **32, 64 and 128 filters**, 3×3 kernels), followed by flattening, a **256-unit dense layer with 0.5 dropout** and a **10-way output layer**, giving roughly **0.6 million parameters**.
+- Trained it with the **Adam** optimizer (learning rate **0.001**), batch size **128**, **20 epochs** and cross-entropy loss, recording training and validation loss and accuracy every epoch.
+- **Part B, transfer learning:** Loaded **ResNet18 pretrained on ImageNet**, resized the images to **224×224** and normalised them with the ImageNet mean and standard deviation, as the pretrained network expects.
+- **Froze all feature-extraction layers**, replaced the final layer with a new **10-class classifier**, and trained only that classifier (about **5,000 trainable parameters** out of roughly 11 million) with Adam (learning rate **0.001**), batch size **128** and **5 epochs**.
+- Evaluated both models on the test set using **accuracy, precision, recall and F1-score**, and examined **confusion matrices** and **per-class accuracy**.
+- Compared the two approaches on test performance, training time, number of trainable parameters, how quickly each converged and the **train-validation gap**.
+
+### Implementation:
+-   Understood how **convolution** extracts local patterns into **feature maps**, how **pooling** reduces spatial size while keeping the strongest responses, and how stacked layers build up **representations** from edges to textures to object parts.
+-   Understood **transfer learning**: a network pretrained on a large dataset already provides general-purpose features, so only a small classifier on top needs training.
+-   Implemented a three-block **CNN from scratch** in PyTorch with data augmentation and dropout to reduce overfitting.
+-   Adapted a **pretrained ResNet18** by freezing its feature extractor and training a new classifier.
+-   Compared the from-scratch and transfer-learning approaches on accuracy, cost and training behaviour.
+
+[Link to notebook](ADD_LINK_HERE)
+
+![](ADD_RESULTS_IMAGE_LINK_HERE)
+
+## TASK 9 : Transformer-Based NLP
+
+[INTRO - to be discussed]
+
+### Dataset Used :
+The same **IMDB Movie Reviews dataset** from Task 8 was used, with the **same 80/10/10 train, validation and test splits**, so that DistilBERT and the LSTM are evaluated on exactly the same data. The reviews are **positive** or **negative**, and accuracy, precision, recall and F1-score were reported.
+
+### Process followed:
+- Loaded the data and reused the splits from Task 8 (same random seed of **42**) so results can be compared directly.
+- Kept the review text largely unprocessed, since the pretrained tokenizer is designed to handle raw text. Only HTML tags were removed.
+- Tokenized the reviews with the **`distilbert-base-uncased` tokenizer** (WordPiece subwords), adding the special tokens and **truncating or padding** to a maximum length of **256 tokens**, and created attention masks so that padding is ignored.
+- Loaded the pretrained **DistilBERT** model with a **classification head** on top.
+- **Fine-tuned** the whole model on the training set using the **AdamW** optimizer with a small learning rate of **2e-5**, a batch size of **16**, **3 epochs** and a linear learning-rate schedule with warm-up, on a GPU, while monitoring **training and validation loss and accuracy** after each epoch.
+- Evaluated the fine-tuned model on the test set using **accuracy, precision, recall and F1-score**, and examined the **confusion matrix**.
+- Compared DistilBERT with the Task 8 **LSTM** on performance, training time, number of parameters and handling of **long reviews**, and looked at examples where the two models disagreed.
+
+### Implementation:
+-   Understood the main components of a transformer: **tokenization**, **embeddings**, **positional encoding** (which restores word order, since attention alone has none) and **self-attention**, which lets every token look at every other token directly instead of passing information step by step.
+-   Understood **transfer learning and fine-tuning**: DistilBERT is a smaller, faster model distilled from BERT, pretrained on large amounts of text and adapted here to sentiment classification.
+-   Fine-tuned DistilBERT with **PyTorch and Hugging Face Transformers** on the same data used for the LSTM.
+-   Compared the fine-tuned transformer with the LSTM on performance, cost and long-range context handling.
+
+[Link to notebook](ADD_LINK_HERE)
+
+![](ADD_RESULTS_IMAGE_LINK_HERE)
 
 ## TASK 11 : PDF Question Answering using RAG
 
@@ -226,7 +275,12 @@ PDF question answering.
 | **Supabase** | Persistent storage for conversation threads and messages |
 | **Streamlit** | Frontend UI, sidebar navigation and response streaming |
 
+### System Architecture :
 ![](https://github.com/riti2043/Level1images/blob/main/rag_architecture.png?raw=true)
+
+[GitHub Repo](https://github.com/riti2043/marvel_level3/tree/main/task_11) | [Live App](https://ragsimplechatbot.streamlit.app/)
+
+![](ADD_IMAGE_LINK_HERE)
 
 ### Implementation:
 - Understood how semantic search differs from keyword search — embeddings capture meaning, not exact words, so a question phrased differently still retrieves the right passage.
@@ -235,6 +289,4 @@ PDF question answering.
 - Understood why responses are streamed token by token — it gives immediate feedback rather than a long wait, which is critical for UX with longer documents.
 - Designed the database layer with a local fallback so the app works even without a Supabase connection.
 
-[GitHub Repo](https://github.com/riti2043/marvel_level3/tree/main/task_11) | [Live App](https://ragsimplechatbot.streamlit.app/)
 
-![](ADD_IMAGE_LINK_HERE)
