@@ -32,15 +32,28 @@ def parse_and_chunk_pdf(uploaded_file, chunk_size: int = 1000, chunk_overlap: in
 
 def build_vectorstore(chunks, gemini_api_key: str):
     """
-    Generates embeddings via Google Gemini text-embedding-004 and stores
+    Generates embeddings via Google Gemini and stores
     them in an in-memory FAISS index.
+    Attempts active models (gemini-embedding-001) with graceful fallbacks.
     """
-    embeddings = GoogleGenerativeAIEmbeddings(
-        model="models/text-embedding-004",
-        google_api_key=gemini_api_key
-    )
-    vectorstore = FAISS.from_documents(chunks, embeddings)
-    return vectorstore
+    candidate_models = [
+        "models/gemini-embedding-001",
+        "gemini-embedding-001",
+        "models/text-embedding-004",
+        "text-embedding-004",
+    ]
+    last_err = None
+    for model_name in candidate_models:
+        try:
+            embeddings = GoogleGenerativeAIEmbeddings(
+                model=model_name,
+                google_api_key=gemini_api_key
+            )
+            return FAISS.from_documents(chunks, embeddings)
+        except Exception as e:
+            last_err = e
+            continue
+    raise last_err
 
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.messages import SystemMessage, HumanMessage, AIMessage

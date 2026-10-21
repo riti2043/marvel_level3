@@ -1,3 +1,4 @@
+import os
 import streamlit as st
 from ui import inject_custom_styles, render_sidebar, render_empty_state, render_chat_area
 from rag_engine import parse_and_chunk_pdf, build_vectorstore
@@ -6,7 +7,6 @@ from db import create_thread, get_threads
 # 1. Page Configuration & Custom CSS Injection
 st.set_page_config(
     page_title="PDF Question Answering",
-    page_icon="📄",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -24,8 +24,13 @@ if "active_thread_id" not in st.session_state:
     else:
         st.session_state["active_thread_id"] = create_thread("New Chat")
 
-# Retrieve Gemini API Key securely from secrets
-gemini_api_key = st.secrets.get("GEMINI_API_KEY", "")
+# Retrieve Gemini API Key securely from secrets or environment
+gemini_api_key = (
+    st.secrets.get("GEMINI_API_KEY", "")
+    or st.secrets.get("GOOGLE_API_KEY", "")
+    or os.environ.get("GEMINI_API_KEY", "")
+    or os.environ.get("GOOGLE_API_KEY", "")
+)
 
 
 def index_document(file):
@@ -36,7 +41,7 @@ def index_document(file):
             vs = build_vectorstore(chunks, gemini_api_key)
             st.session_state["vectorstore"] = vs
             st.session_state["active_doc_name"] = file.name
-            st.toast(f"Indexed {len(chunks)} chunks from {file.name}!", icon="✅")
+            st.toast(f"Indexed {len(chunks)} chunks from {file.name}!")
         except Exception as e:
             st.error(f"Error indexing document: {str(e)}")
 

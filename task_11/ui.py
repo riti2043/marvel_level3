@@ -20,7 +20,7 @@ def render_sidebar():
     3. Saved thread history from Supabase
     """
     with st.sidebar:
-        st.markdown("### 📄 Document Hub")
+        st.markdown("### Document Hub")
 
         active_doc = st.session_state.get("active_doc_name")
         if active_doc:
@@ -38,8 +38,8 @@ def render_sidebar():
         st.divider()
 
         # Thread Management
-        st.markdown("### 💬 Conversations")
-        if st.button("➕ New Chat", use_container_width=True, type="primary"):
+        st.markdown("### Conversations")
+        if st.button("+ New Chat", use_container_width=True, type="primary"):
             new_id = create_thread(title="New Chat")
             st.session_state["active_thread_id"] = new_id
             st.rerun()
@@ -54,7 +54,7 @@ def render_sidebar():
                 title = thread.get("title", "New Chat")
                 is_active = (tid == st.session_state.get("active_thread_id"))
 
-                label = f"▸ {title}" if is_active else f"  {title}"
+                label = f"> {title}" if is_active else f"  {title}"
                 if st.button(label, key=f"thread_btn_{tid}", use_container_width=True):
                     st.session_state["active_thread_id"] = tid
                     st.rerun()
@@ -102,9 +102,9 @@ def render_chat_area(vectorstore, gemini_api_key: str):
     # Pinned document badge at the top of the chat
     col1, col2 = st.columns([4, 1])
     with col1:
-        st.markdown(f"📄 **Active Document:** `{st.session_state.get('active_doc_name')}`")
+        st.markdown(f"**Active Document:** `{st.session_state.get('active_doc_name')}`")
     with col2:
-        st.caption("⚡ Citations Grounded")
+        st.caption("Citations Grounded")
 
     st.markdown("<hr style='border-color: #1F1F23; margin: 0.5rem 0 1rem 0;'>", unsafe_allow_html=True)
 
@@ -114,7 +114,7 @@ def render_chat_area(vectorstore, gemini_api_key: str):
         with st.chat_message(msg["role"]):
             st.markdown(msg["content"])
             if msg.get("sources"):
-                with st.expander("📚 View Document Citations", expanded=False):
+                with st.expander("View Document Citations", expanded=False):
                     for src in msg["sources"]:
                         st.caption(f"**Page {src.get('page', '?')}:** {src.get('snippet', '')}")
 
@@ -139,7 +139,7 @@ def render_chat_area(vectorstore, gemini_api_key: str):
 
             # Display source citations directly under the answer
             if sources:
-                with st.expander("📚 View Document Citations", expanded=False):
+                with st.expander("View Document Citations", expanded=False):
                     for src in sources:
                         st.caption(f"**Page {src.get('page', '?')}:** {src.get('snippet', '')}")
 
