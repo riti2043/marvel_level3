@@ -3,7 +3,8 @@
 
 Naive Bayes is a **probabilistic classifier** that uses Bayes' theorem to predict the class with the highest **posterior probability**. It assumes the features are **conditionally independent** given the class, which is rarely true for real text but makes the model very fast. The **Multinomial** variant works on word counts, and **Laplace smoothing** stops an unseen word from zeroing out a class.
 
-![](ADD_MATH_IMAGE_LINK_HERE)
+![](https://github.com/riti2043/Level1images/blob/main/1task1.jpeg?raw=true)
+![](https://github.com/riti2043/Level1images/blob/main/1task2.jpeg?raw=true)
 
 ### Dataset Used :
 The **IMDB Movie Reviews dataset** contains **50,000 reviews** labeled **positive** or **negative**. The classes are balanced, so accuracy is a fair measure, though precision, recall and F1-score were also reported.
